@@ -12,7 +12,12 @@ namespace EFCorePeliculasApi.Entidades.Configuraciones
 			 aca ponemos todas las configuraciones del api fuente
 			esto se hace para poder tener un orden dentro del entity framework core
 			y tambien para poder darle mantenimiento con mas legibilidad
+
+			configurando dicha entidad como una tabla temporal
 			 */
+
+
+			
 
 			//aca estamos diciendo cual campo es la llave primaria
 			builder.HasKey(g => g.Identificador);
@@ -27,16 +32,20 @@ namespace EFCorePeliculasApi.Entidades.Configuraciones
 				.IsRequired()
 				/*
 				 podemos ponerle el nombre que queramos
-				.HasColumnName("nombreGenero");
+					.HasColumnName("nombreGenero");
+
+				para evitar los problemas de concurrencia por campo
+				en este campo
+					.IsConcurrencyToken()
 				 */
-				;
-			/*
-			  para darle otro nombre a la tabla distinta a la clase
-			  .ToTable(name: "TablaGeneros", schema: "peliculas")
-			builder.ToTable(name: "TablaGeneros", schema: "peliculas");
-			 */
+				.IsConcurrencyToken();
 
 			/*
+			  para darle otro nombre a la tabla distinta a la clase
+				  .ToTable(name: "TablaGeneros", schema: "peliculas")
+				builder.ToTable(name: "TablaGeneros", schema: "peliculas");
+			
+
 			 aplicando un filtro a nivel de modelo, para tenerlo como valor por 
 			defecto en nuestras consultas, en todo el proyecto con .HasQueryFilter
 				

@@ -94,6 +94,11 @@ namespace EFCorePeliculasApi.Servicios
             CreateMap<PeliculaActorCreacionDTO, PeliculaActor>();
 
             CreateMap<ActorCreacionDTO, Actor>();
+
+            /*
+             creacion de map para dto con control de conflicto de concurrencia con el modelo desconectado
+             */
+            CreateMap<GeneroActualizacionDTO, Genero>();
 		}
     }
 }

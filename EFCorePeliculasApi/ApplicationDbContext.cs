@@ -1,5 +1,6 @@
 ﻿using EFCorePeliculasApi.Entidades;
 using EFCorePeliculasApi.Entidades.Configuraciones;
+using EFCorePeliculasApi.Entidades.Funciones;
 using EFCorePeliculasApi.Entidades.Seeding;
 using EFCorePeliculasApi.Entidades.SinLlaves;
 using EFCorePeliculasApi.Servicios;
@@ -265,6 +266,35 @@ namespace EFCorePeliculasApi
 			SeedingPersonaMensaje.Seed(modelBuilder);
 
 			/*
+			 seeding ejm, para ejecutarlas funciones escalares
+			 */
+			SeedingFacturas.Seed(modelBuilder);
+
+			/*
+			 configuracion de las fn scalares en el archivo de fn's
+			 */
+			Escalares.RegistrarFunciones(modelBuilder);
+
+			/*
+			 configurando una fn de tabla 
+			 */
+			modelBuilder.HasDbFunction(() => PeliculaConConteosFn(0));
+
+			/*
+			 configurando una secuencia con su propio esquema
+			para evitar conflitos
+			 */
+			modelBuilder.HasSequence<int>("NumeroFactura", "factura")
+				/*
+				 si queremos que la secuencia inicie en un valor en especifico
+				usamos
+					.StartsAt(10_000)
+				si queremos que se incremente de un valor a otra valor
+					.IncrementsBy(5)
+				 */
+				;
+
+			/*
 			 esto nos permite decirle al EFC, que no genere nada para la primary key
 				modelBuilder.Entity<Log>().Property(l=>l.Id).ValueGeneratedNever();
 			 */
@@ -352,6 +382,25 @@ namespace EFCorePeliculasApi
 
 			}
 		}
+
+		/*
+		 llamando una fn scalar desde el motor de sql server
+			si queremos pasar la fn [DbFunction(Name="nombreFn")]
+			o la llamamos como se llama la fn en la bd
+		 */
+		[DbFunction]
+		public int FacturaDetalleSuma(int facturaId) => 0;
+
+		/*
+		 llamando una fn de tabla desde el motor de sql server,
+		todo esto es una plantilla que utiliza EFC, para despues sustituir con
+		la fn del sql server
+		 */
+		public IQueryable<PeliculaConConteos> PeliculaConConteosFn(int peliculaId)
+		{
+			return FromExpression(()=> PeliculaConConteosFn(peliculaId));
+		}
+
 		public DbSet<Genero> Generos { get; set; }
         public DbSet<Actor> Actores { get; set; }
         public DbSet<Cine> Cines { get; set; }

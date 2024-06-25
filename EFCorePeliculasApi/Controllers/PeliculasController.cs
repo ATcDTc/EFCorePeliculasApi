@@ -23,11 +23,24 @@ namespace EFCorePeliculasApi.Controllers
 
 		/*
 		 utilizando una vista que esta en el sqlserver, con entidades sin llaves
+
+			[HttpGet("peliculasConConteos")]
+			public async Task<ActionResult<IEnumerable<PeliculaConConteos>>>GetPeliculasConConteos()
+			{
+				return await context.PeliculaConConteos.ToListAsync();
+			}
+
+		utilizando un inPoint para fn de tabla
 		 */
-		[HttpGet("peliculasConConteos")]
-		public async Task<ActionResult<IEnumerable<PeliculaConConteos>>>GetPeliculasConConteos()
+		[HttpGet("peliculasConConteos/{id:int}")]
+		public async Task<ActionResult<PeliculaConConteos>>GetPeliculasConConteos(int id)
 		{
-			return await context.PeliculaConConteos.ToListAsync();
+			var resultado= await context.PeliculaConConteosFn(id).FirstOrDefaultAsync();
+
+			if ( resultado is null)
+				return NotFound();
+
+			return resultado;
 		}
 
 

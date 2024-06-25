@@ -1,4 +1,6 @@
-﻿using EFCorePeliculasApi.Entidades;
+﻿using AutoMapper;
+using EFCorePeliculasApi.DTOs;
+using EFCorePeliculasApi.Entidades;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -10,14 +12,16 @@ namespace EFCorePeliculasApi.Controllers
 	public class GenerosController:ControllerBase
 	{
 		private readonly ApplicationDbContext context;
+		private readonly IMapper mapper;
 
 		/*
 recibira peticiones https en el api
 y manejar peticiones con la entidade de Generos
 */
-		public GenerosController(ApplicationDbContext context)
+		public GenerosController(ApplicationDbContext context, IMapper mapper)
         {
 			this.context = context;
+			this.mapper = mapper;
 		}
 
 		[HttpGet]
@@ -439,6 +443,51 @@ y manejar peticiones con la entidade de Generos
 
 			//para visualizar el valor
 			return Ok(id);
+
+		}
+
+		/*
+		 conflitos de concurrencia por campo
+		 */
+		[HttpPost("concurrency_token")]
+		public async Task<ActionResult> ConcurrencyToken()
+		{
+			var generoId = 1;
+
+			/*
+			 aqui vemos un problema de data en conflictos de concurrencia
+			para evitarlo ire a la entidad
+			 */
+
+			//Jordan, lee el registro de la bd
+			var genero=await context.Generos.AsTracking()
+							.FirstOrDefaultAsync(g=>g.Identificador==generoId);
+			genero.Nombre = "Jordan estuvo aqui";
+
+			//Ester, actualiza el registro en la bd
+			await context.Database.ExecuteSqlInterpolatedAsync($"UPDATE Generos SET Nombre='Ester estuvo aqui' WHERE Identificador={generoId}");
+
+			//Jordan intenta actualizar
+			await context.SaveChangesAsync();
+
+			return Ok();
+
+		}
+
+		/*
+		 conflicto de concurrencia con el modelo desconectado
+		por campo
+		 */
+		[HttpPut("concurrenciaModeloDesconectado")]
+		public async Task<ActionResult>PutModeloDesconectado(GeneroActualizacionDTO generoActualizacionDTO)
+		{
+			//mapeando del DTO a la entidad
+			var genero=mapper.Map<Genero>(generoActualizacionDTO);
+
+			context.Update(genero);
+			context.Entry(genero).Property(g => g.Nombre).OriginalValue = generoActualizacionDTO.Nombre_Original;
+			await context.SaveChangesAsync();
+			return Ok();
 
 		}
 

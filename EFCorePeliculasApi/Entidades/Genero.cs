@@ -33,16 +33,18 @@ namespace EFCorePeliculasApi.Entidades
             [StringLength(150)]
             [MaxLength(150)]
         en el caso de un string ambos hacen lo mismo
-         */
-		/*
+        
          para hacer que los campos no permitan nulos
         ponemos [Required] atributo
-         */
-		/*
+         
          para ponerle cualquier nombre a la columna
         distinta al nombre de la variable de la clase
         
-        [Column("NombreGenero")]
+            [Column("NombreGenero")]
+
+        para poder evitar conflictos de concurrencia por campo ponemos
+        el atributo 
+            [ConcurrencyCheck]
          */
 		public string? Nombre { get; set; }
         /*
