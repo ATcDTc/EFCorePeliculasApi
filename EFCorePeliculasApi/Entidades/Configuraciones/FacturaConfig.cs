@@ -8,11 +8,29 @@ namespace EFCorePeliculasApi.Entidades.Configuraciones
 		public void Configure(EntityTypeBuilder<Factura> builder)
 		{
 			/*
+			 configurando la tabla a temporal de forma personalizada
+			 */
+			builder.ToTable(name: nameof(Factura), op =>
+			{
+				op.IsTemporal(t =>
+				{
+					//aca personalizamos las columnas de la tabla temporal
+					t.HasPeriodStart("Desde");
+					t.HasPeriodEnd("Hasta");
+					t.UseHistoryTable(name: "FacturasHistorico");
+				});
+			});
+
+			//si eixste convenio de datetime2
+			builder.Property("Desde").HasColumnType("datetime2");
+			builder.Property("Hasta").HasColumnType("datetime2");
+
+			/*
 			 configuracion de begintransaction
 
 			.hasMany, muchas facturas tienen muchos detalles
 			.withone, una factura detalle tiene una factura
-			builder.HasMany(typeof(FacturaDetalle)).WithOne();
+				builder.HasMany(typeof(FacturaDetalle)).WithOne();
 			 */
 			builder.HasMany(typeof(FacturaDetalle)).WithOne();
 

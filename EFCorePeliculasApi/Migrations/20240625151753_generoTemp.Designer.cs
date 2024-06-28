@@ -4,6 +4,7 @@ using EFCorePeliculasApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 
@@ -12,9 +13,11 @@ using NetTopologySuite.Geometries;
 namespace EFCorePeliculasApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240625151753_generoTemp")]
+    partial class generoTemp
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -210,16 +213,16 @@ namespace EFCorePeliculasApi.Migrations
                         {
                             Id = 2,
                             CineId = 4,
-                            FechaFinal = new DateTime(2024, 7, 1, 0, 0, 0, 0, DateTimeKind.Local),
-                            FechaInicio = new DateTime(2024, 6, 26, 0, 0, 0, 0, DateTimeKind.Local),
+                            FechaFinal = new DateTime(2024, 6, 30, 0, 0, 0, 0, DateTimeKind.Local),
+                            FechaInicio = new DateTime(2024, 6, 25, 0, 0, 0, 0, DateTimeKind.Local),
                             PorcentajeDescuento = 15m
                         },
                         new
                         {
                             Id = 1,
                             CineId = 1,
-                            FechaFinal = new DateTime(2024, 7, 3, 0, 0, 0, 0, DateTimeKind.Local),
-                            FechaInicio = new DateTime(2024, 6, 26, 0, 0, 0, 0, DateTimeKind.Local),
+                            FechaFinal = new DateTime(2024, 7, 2, 0, 0, 0, 0, DateTimeKind.Local),
+                            FechaInicio = new DateTime(2024, 6, 25, 0, 0, 0, 0, DateTimeKind.Local),
                             PorcentajeDescuento = 10m
                         });
                 });
@@ -232,18 +235,8 @@ namespace EFCorePeliculasApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("Desde")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("Desde");
-
                     b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("date");
-
-                    b.Property<DateTime>("Hasta")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("Hasta");
 
                     b.Property<int>("NumeroFactura")
                         .ValueGeneratedOnAdd()
@@ -258,18 +251,7 @@ namespace EFCorePeliculasApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Factura", (string)null);
-
-                    b.ToTable(tb => tb.IsTemporal(ttb =>
-                            {
-                                ttb.UseHistoryTable("FacturasHistorico");
-                                ttb
-                                    .HasPeriodStart("Desde")
-                                    .HasColumnName("Desde");
-                                ttb
-                                    .HasPeriodEnd("Hasta")
-                                    .HasColumnName("Hasta");
-                            }));
+                    b.ToTable("Facturas");
 
                     b.HasData(
                         new
@@ -508,11 +490,11 @@ namespace EFCorePeliculasApi.Migrations
                         .IsUnique()
                         .HasFilter("EstaBorrado='false'");
 
-                    b.ToTable("Generos", (string)null);
+                    b.ToTable("Genero", (string)null);
 
                     b.ToTable(tb => tb.IsTemporal(ttb =>
                             {
-                                ttb.UseHistoryTable("GenerosHistory");
+                                ttb.UseHistoryTable("GeneroHistory");
                                 ttb
                                     .HasPeriodStart("PeriodStart")
                                     .HasColumnName("PeriodStart");

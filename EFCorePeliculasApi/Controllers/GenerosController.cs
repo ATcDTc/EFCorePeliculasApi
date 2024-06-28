@@ -491,5 +491,202 @@ y manejar peticiones con la entidade de Generos
 
 		}
 
+		/*
+		 inpoint que modifica varias veces con el fin de poder consultar la tabla temporal y su historico
+		 */
+		[HttpPut("modificar_varias_veces")]
+		public async Task<ActionResult> ModificarVariasVeces()
+		{
+			var id = 3;
+			var genero = await context.Generos.AsTracking().FirstOrDefaultAsync(g => g.Identificador == id);
+
+			genero.Nombre = "Comedia 2";
+			await context.SaveChangesAsync();
+			await Task.Delay(2000);
+
+			genero.Nombre = "Comedia 3";
+			await context.SaveChangesAsync();
+			await Task.Delay(2000);
+
+			genero.Nombre = "Comedia 4";
+			await context.SaveChangesAsync();
+			await Task.Delay(2000);
+
+			genero.Nombre = "Comedia 5";
+			await context.SaveChangesAsync();
+			await Task.Delay(2000);
+
+			genero.Nombre = "Comedia 6";
+			await context.SaveChangesAsync();
+			await Task.Delay(2000);
+
+			genero.Nombre = "Comedia Actual";
+			await context.SaveChangesAsync();
+			await Task.Delay(2000);
+
+			return Ok(genero.Nombre);
+		}
+
+		/*
+		 obteniendo la data de la temp
+		 */
+		[HttpGet("obteniendoDataHistorica")]
+		public async Task<ActionResult<Genero>>GetHistorico(int id)
+		{
+			var genero = await context.Generos.AsTracking().FirstOrDefaultAsync(g=>g.Identificador==id);
+
+			if (genero is null)
+			{
+				return NotFound();
+			}
+
+			var fechaCreacion = context.Entry(genero).Property<DateTime>("FechaCreacion").CurrentValue;
+			var periodStart = context.Entry(genero).Property<DateTime>("PeriodStart").CurrentValue;
+			var periodEnd = context.Entry(genero).Property<DateTime>("PeriodEnd").CurrentValue;
+
+			return Ok(new
+			{
+				Id=genero.Identificador,
+				Nombre=genero.Nombre,
+				fechaCreacion,
+				periodStart,
+				periodEnd
+			});
+		}
+
+		/*
+		 obtener la info de la tabla historica
+		 */
+		[HttpGet("temporalAll/{id:int}")]
+		public async Task<ActionResult> GetTemporalAll(int id)
+		{
+			/*
+			 con .TemporalAll(), nos permite traer tanto la informacion de la 
+			tabla temporarl como de la tabla historica
+			 */
+			var genero=await context.Generos.TemporalAll().AsTracking()
+				.Where(g=>g.Identificador == id)
+				.Select(g => new
+				{
+					Id=g.Identificador,
+					Nombre=g.Nombre,
+					//aprender a tomar el valor desde aqui
+					PeriodStart=EF.Property<DateTime>(g,"PeriodStart"),
+					PeriodEnd=EF.Property<DateTime>(g,"PeriodEnd")
+				}).ToListAsync();
+
+			return Ok(genero);
+		}
+
+		/*
+		 para saber como estaban los datos de acuerdo a una fecha en especifica
+		 */
+		[HttpGet("TemporalAsOf/{id:int}")]
+		public async Task<ActionResult>GetTemporalAsOf(int id, DateTime fecha)
+		{
+			var genero= await context.Generos.TemporalAsOf(fecha).AsTracking()
+				.Where(g=>g.Identificador==id)
+				.Select(g => new
+				{
+					id = g.Identificador,
+					nombre = g.Nombre,
+					PeriodStart = EF.Property<DateTime>(g,"PeriodStart"),
+					PeriodEnd=EF.Property<DateTime>(g,"PeriodEnd")
+				}).FirstOrDefaultAsync();
+
+			return Ok(genero);
+		}
+
+		/*
+		 para saber por rango de fechas 
+		 */
+		[HttpGet("TemporalFromTo/{id:int}")]
+		public async Task<ActionResult>GetTemporalFromTo(int id, DateTime desde, DateTime hasta)
+		{
+			var generos=await context.Generos.TemporalFromTo(desde,hasta).AsTracking()
+				.Where(g=>g.Identificador == id)
+				.Select(g=>new
+				{
+					id=g.Identificador,
+					nombre=g.Nombre,
+					PeriodStart= EF.Property<DateTime>(g,"PeriodStart"),
+					PeriodEnd=EF.Property<DateTime>(g,"PeriodEnd")
+				}).ToListAsync();
+
+			return Ok(generos);
+		}
+
+		/*
+		 para saber regristros por contendio entre fechas
+		 */
+		[HttpGet("TemporalContainedIn/{id:int}")]
+		public async Task<ActionResult>GetTemporalContainedIn(int id, DateTime desde, DateTime hasta)
+		{
+			var generos = await context.Generos.TemporalContainedIn(desde, hasta).AsTracking()
+				.Where(g => g.Identificador == id)
+				.Select(g => new
+				{
+					Id = g.Identificador,
+					Nombre = g.Nombre,
+					PeriodStart = EF.Property<DateTime>(g, "PeriodStart"),
+					PeriodEnd = EF.Property<DateTime>(g, "PeriodEnd")
+				}).ToListAsync();
+
+			return Ok(generos);
+		}
+
+		/*
+		 temporalBetween
+		 */
+		[HttpGet("TemporalBetween/{id:int}")]
+		public async Task<ActionResult> GetTemporalBetween(int id, DateTime desde, DateTime hasta)
+		{
+			var generos = await context.Generos.TemporalBetween(desde, hasta).AsTracking()
+				.Where(g => g.Identificador == id)
+				.Select(g => new
+				{
+					Id = g.Identificador,
+					Nombre = g.Nombre,
+					PeriodStart = EF.Property<DateTime>(g, "PeriodStart"),
+					PeriodEnd = EF.Property<DateTime>(g, "PeriodEnd")
+				}).ToListAsync();
+
+			return Ok(generos);
+		}
+
+		/*
+		 restaurando registro borrado en tabla temporal
+		 */
+		[HttpPost("Restaurar_Borrado/{id:int}")]
+		public async Task<ActionResult>RestaurarBorrado(int id, DateTime fecha)
+		{
+			var genero=await context.Generos.TemporalAsOf(fecha).AsTracking()
+				.IgnoreQueryFilters()
+				.FirstOrDefaultAsync(g=>g.Identificador==id);
+
+			if (genero is null)
+				return NotFound();
+
+			/*
+			 insertando el registro eliminado con el mismo id anteriormente,
+			de forma con query albitrario
+			 */
+			try
+			{
+				await context.Database.ExecuteSqlInterpolatedAsync(@$"SET IDENTITY_INSERT Generos ON;
+INSERT INTO Generos(Identificador,Nombre)
+	VALUES({genero.Identificador},{genero.Nombre})
+
+SET IDENTITY_INSERT Genero OFF;
+");
+			}
+			finally 
+			{
+				await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Genero OFF;");
+			}
+
+			return Ok();
+
+		}
 	}
 }

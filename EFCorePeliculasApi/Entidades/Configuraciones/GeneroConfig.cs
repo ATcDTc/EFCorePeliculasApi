@@ -15,9 +15,16 @@ namespace EFCorePeliculasApi.Entidades.Configuraciones
 
 			configurando dicha entidad como una tabla temporal
 			 */
+			builder.ToTable(name: "Generos", op =>
+			{
+				op.IsTemporal();
+			});
+			/*
+			 cuando tenemos el convenccion de que todo tipo de dato debe ser datetime2
+			 */
+			builder.Property("PeriodStart").HasColumnType("datetime2");
+			builder.Property("PeriodEnd").HasColumnType("datetime2");
 
-
-			
 
 			//aca estamos diciendo cual campo es la llave primaria
 			builder.HasKey(g => g.Identificador);
