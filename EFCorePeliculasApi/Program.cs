@@ -120,7 +120,10 @@ clases de tipo DTO, para queries simples
  */
 builder.Services.AddAutoMapper(typeof(Program));
 
-
+/*
+ tratando de configurar un dbcontext como servicio singleton
+ */
+builder.Services.AddSingleton<Singleton>();
 
 var app = builder.Build();
 

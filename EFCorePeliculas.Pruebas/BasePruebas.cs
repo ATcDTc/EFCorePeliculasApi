@@ -1,4 +1,5 @@
-﻿using EFCorePeliculasApi;
+﻿using AutoMapper;
+using EFCorePeliculasApi;
 using EFCorePeliculasApi.Servicios;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace EFCorePeliculas.Pruebas
 {
-	internal class BasePruebas
+	public class BasePruebas
 	{
 		/*
 		 metodo que crea un dbcontext para pruebas
@@ -23,5 +24,20 @@ namespace EFCorePeliculas.Pruebas
 			var dbcontext=new ApplicationDbContext(op, servicioUsuario,eventosDbContext:null);
 			return dbcontext;
 		}
+
+		/*
+		 metodo que prueba AutoMapper
+		 */
+		protected IMapper ConfigurarAutoMapper()
+		{
+			var config = new MapperConfiguration(op =>
+			{
+				//instanciando la clase que tiene las configuraciones del mapeo de nuestas instancias
+				op.AddProfile(new AutoMapperProfiles());
+			});
+
+			return config.CreateMapper();
+		}
+
 	}
 }

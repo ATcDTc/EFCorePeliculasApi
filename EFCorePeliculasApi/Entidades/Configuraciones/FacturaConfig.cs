@@ -22,8 +22,8 @@ namespace EFCorePeliculasApi.Entidades.Configuraciones
 			});
 
 			//si eixste convenio de datetime2
-			builder.Property("Desde").HasColumnType("datetime2");
-			builder.Property("Hasta").HasColumnType("datetime2");
+			builder.Property<DateTime>("Desde").HasColumnType("datetime2");
+			builder.Property<DateTime>("Hasta").HasColumnType("datetime2");
 
 			/*
 			 configuracion de begintransaction

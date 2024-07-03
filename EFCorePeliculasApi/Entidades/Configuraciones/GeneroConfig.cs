@@ -21,9 +21,13 @@ namespace EFCorePeliculasApi.Entidades.Configuraciones
 			});
 			/*
 			 cuando tenemos el convenccion de que todo tipo de dato debe ser datetime2
+				builder.Property("PeriodStart").HasColumnType("datetime2");
+				builder.Property("PeriodEnd").HasColumnType("datetime2");
+			
+			se especifica para que no de error en la db en memory
 			 */
-			builder.Property("PeriodStart").HasColumnType("datetime2");
-			builder.Property("PeriodEnd").HasColumnType("datetime2");
+			builder.Property<DateTime>("PeriodStart").HasColumnType("datetime2");
+			builder.Property<DateTime>("PeriodEnd").HasColumnType("datetime2");
 
 
 			//aca estamos diciendo cual campo es la llave primaria

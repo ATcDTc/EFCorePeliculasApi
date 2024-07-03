@@ -256,24 +256,33 @@ namespace EFCorePeliculasApi
 			modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
 			/*
-			 para aplicar la precarga de datos desde el archivo seeding
-			*/
-			SeedingModuloConsulta.Seed(modelBuilder);
-			/*
-			 seeding como ejm, para la esplixacion de dos propiedades de navegacion en la misma clase
-			o InverseProperty
+			 para saber cuando se usa el dbcontext en una bd en memoria
+			para no cargar la dataseeding
 			 */
-			SeedingPersonaMensaje.Seed(modelBuilder);
+			if (!Database.IsInMemory())
+			{
+				/*
+				 para aplicar la precarga de datos desde el archivo seeding
+				*/
+				SeedingModuloConsulta.Seed(modelBuilder);
+				/*
+				 seeding como ejm, para la esplixacion de dos propiedades de navegacion en la misma clase
+				o InverseProperty
+				 */
+				SeedingPersonaMensaje.Seed(modelBuilder);
 
-			/*
-			 seeding ejm, para ejecutarlas funciones escalares
-			 */
-			SeedingFacturas.Seed(modelBuilder);
+				/*
+				 seeding ejm, para ejecutarlas funciones escalares
+				 */
+				SeedingFacturas.Seed(modelBuilder);
 
-			/*
-			 configuracion de las fn scalares en el archivo de fn's
-			 */
-			Escalares.RegistrarFunciones(modelBuilder);
+				/*
+				 configuracion de las fn scalares en el archivo de fn's
+				 */
+				Escalares.RegistrarFunciones(modelBuilder);
+			}
+
+			
 
 			/*
 			 configurando una fn de tabla 
