@@ -13,16 +13,56 @@ namespace EFCorePeliculasApi.Controllers
 	{
 		private readonly ApplicationDbContext context;
 		private readonly IMapper mapper;
+		//private readonly IDbContextFactory<ApplicationDbContext> dbContextFactory;
 
 		/*
 recibira peticiones https en el api
 y manejar peticiones con la entidade de Generos
 */
-		public GenerosController(ApplicationDbContext context, IMapper mapper)
+		public GenerosController(
+			/*
+			 aunque la factoria del dbcontext este activa esto es valido
+			ya que permite que este sea registrado como un servicio directamente
+				ApplicationDbContext context
+
+			cuando usamos el AddPooledDbContextFactory, en la clase program, no 
+			podemos tener inyectado el ApplicationDbContext directamente en las
+			clases, por eso se borra y se usa la interface del factory
+			 */
+			ApplicationDbContext context,
+			
+			IMapper mapper
+			/*
+			 pero sin embargo uno no desea inyectarlo entonces podemos usar un servicio
+				IDbContextFactory<ApplicationDbContext> dbContextFactory
+			 */
+			//, IDbContextFactory<ApplicationDbContext> dbContextFactory
+			)
         {
 			this.context = context;
 			this.mapper = mapper;
+			//this.dbContextFactory = dbContextFactory;
 		}
+
+		/*
+		 getpoint, que utiliza la factoria del dbcontext
+
+			[HttpGet("usoFactoria")]
+			public async Task<IEnumerable<Genero>> GetUsoFactoria()
+			{
+				using (var newContext=dbContextFactory.CreateDbContext())
+				{
+					newContext.Logs.Add(new Log
+					{
+						Id=Guid.NewGuid(),
+						Mensaje="Ejecutando metodo Generos.GetUsoFactoria"
+					});
+					await newContext.SaveChangesAsync();
+					return await newContext.Generos.OrderByDescending(g=>EF.Property<DateTime>(g,"FechaCreacion")).ToListAsync();
+				}
+			}
+		 */
+
 
 		[HttpGet]
 		public async Task<IEnumerable<Genero>> Get()

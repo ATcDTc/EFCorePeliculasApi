@@ -62,7 +62,7 @@ namespace EFCorePeliculas.Pruebas
 		public static ApplicationDbContext GetDbContextLocalDb(bool beginTransaction = true)
 		{
 			var op = new DbContextOptionsBuilder<ApplicationDbContext>()
-				.UseSqlServer($"Data Source=(localdb)\\mssqllocaldb;Initial Catalog={_dbName};Integrated Security=True",
+				.UseSqlServer($"Data Source=(localdb)\\mssqllocaldb;Initial Catalog={_dbName};Integrated Security=True; Trust Server Certificate=False",
 					x => x.UseNetTopologySuite()).Options;
 
 			var servicioUsuario=new ServicioUsuario();
@@ -101,6 +101,18 @@ namespace EFCorePeliculas.Pruebas
 		 */
 		static void DeleteDB()
 		{
+			ExecuteCommand(Master, $@"IF EXISTS(
+	SELECT 1
+		FROM sys.databases
+		WHERE name='{_dbName}'
+	)
+BEGIN
+	ALTER DATABASE [{_dbName}] SET  SINGLE_USER WITH ROLLBACK IMMEDIATE
+
+	DROP DATABASE [{_dbName}]
+
+END");
+			/*
 			var fileNames = GetDbFiles(Master, $@"
 			SELECT [physical_name] FROM [sys].[master_files]
 			WHERE [database_id]=DB_ID('{_dbName}')");
@@ -109,7 +121,7 @@ namespace EFCorePeliculas.Pruebas
 			{
 				File.Delete(filename);
 			}
-
+			*/
 		}
 
 		/*

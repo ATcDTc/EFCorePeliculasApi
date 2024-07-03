@@ -64,6 +64,21 @@ solo agregamos
 
 var connectionStrings = builder.Configuration.GetConnectionString("DefaultConnection");
 
+/*
+ dbcontext normal por defecto servicio del tipo scoped, 
+	builder.Services.AddDbContext<ApplicationDbContext>(
+
+reutilizacion del dbcontext, para poder ser reciclado cada instancia del mismo
+	builder.Services.AddDbContextPool<ApplicationDbContext>(
+
+para poder realizar la instancia del dbcontext de forma manual
+	builder.Services.AddDbContextFactory<ApplicationDbContext>(
+
+podemos tener un dbcontext reciclable con el cual podemos usar factory
+	builder.Services.AddPooledDbContextFactory<ApplicationDbContext>(
+
+
+ */
 builder.Services.AddDbContext<ApplicationDbContext>(
 //op=>op.UseSqlServer(connectionStrings,
 //	//para utilizar UseNetTopologySuite()

@@ -42,7 +42,7 @@ namespace EFCorePeliculasApi.Entidades.Conversiones
 				 aca el valor por defecto que es desconocida
 					_ => "?"
 				 */
-				_=>"?"
+				_=>""
 			};
 		}
 
@@ -57,7 +57,7 @@ namespace EFCorePeliculasApi.Entidades.Conversiones
 				"$" => Moneda.DolarEstadounidense,
 				"€" => Moneda.Euro,
 				"₿" => Moneda.BTC,
-				var x when (x=="?" || string.IsNullOrEmpty(x) || string.IsNullOrWhiteSpace(x)) => Moneda.Desconocida
+				var x when (string.IsNullOrEmpty(x) || string.IsNullOrWhiteSpace(x)) => Moneda.Desconocida
 			};
 		}
     }

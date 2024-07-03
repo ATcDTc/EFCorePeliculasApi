@@ -27,6 +27,7 @@ namespace EFCorePeliculasApi.Servicios
                     ent => ent.MapFrom(prop => prop.Ubicacion.Y)//nos permite tomar del campo original, una parte
                     )
                 .ForMember(dto => dto.Longitud, ent => ent.MapFrom(prop => prop.Ubicacion.X));
+            
             CreateMap<Genero, GeneroDTO>();
 
             /*
@@ -67,7 +68,7 @@ namespace EFCorePeliculasApi.Servicios
                  vamos a ignorar la entidad salas de cines para probar la deteccion de cambios personalizada
                     .ForMember(ent=>ent.SalasDeCine, op=>op.Ignore())
                  */
-				//.ForMember(ent=>ent.SalasDeCine, op=>op.Ignore())
+				.ForMember(ent=>ent.SalasDeCine, op=>op.Ignore())
                 .ForMember(ent => ent.Ubicacion, dto => dto.MapFrom(
                     /*para la factorizacion comun de las coordenadas*/
                     campo=>geometryFactory.CreatePoint(new Coordinate(campo.Longitud,campo.Latitud))

@@ -16,25 +16,29 @@ namespace EFCorePeliculasApi
 
 		/*
 		 si no queremos usar inyeccion de dependencia para el dbcontext
-		 */
-		public ApplicationDbContext()
-        {
-            
-        }
 
-        public ApplicationDbContext(DbContextOptions options,
-			/*
-			 implementando inyeccion de dependencia en el dbcontext
-			para implementacion de la interfaz de usuarios
-			 */
-			IServicioUsuario servicioUsuario
-			/*
-			 implementando inyeccion de dependencia para los 
-			eventos de tracked y statechanged
-			 */
-			,IEventosDbContext eventosDbContext
-			
-			) : base(options)
+			public ApplicationDbContext() {}
+		 */
+		public ApplicationDbContext() { }
+
+		/*
+		 ApplicationDbContext, normal es un servicio del tipo scoped
+		en donde podemos inyectar otras interfaces, etc
+		
+		 */
+		public ApplicationDbContext(DbContextOptions options,
+	  /*
+	   implementando inyeccion de dependencia en el dbcontext
+	  para implementacion de la interfaz de usuarios
+	   */
+	  IServicioUsuario servicioUsuario
+	  /*
+	   implementando inyeccion de dependencia para los 
+	  eventos de tracked y statechanged
+	   */
+	  , IEventosDbContext eventosDbContext
+
+	  ) : base(options)
 		{
 			this.servicioUsuario = servicioUsuario;
 
@@ -54,6 +58,18 @@ namespace EFCorePeliculasApi
 				SaveChangesFailed += eventosDbContext.ManejarSaveChangesFailed;
 			}
 		}
+
+		/*
+		 para lo que es el reciclaje del ApplicationDbContext,
+		el constructor no debe recibir otro parametro
+
+		public ApplicationDbContext(DbContextOptions options) : base(options)
+		{
+			
+		}
+		 */
+
+
 
 		/*
 		 sobrescribiendo el SaveChanges - token, que es el utilizamos

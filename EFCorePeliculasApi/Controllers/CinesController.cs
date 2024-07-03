@@ -124,25 +124,25 @@ namespace EFCorePeliculasApi.Controllers
 					FechaInicio = DateTime.Today,
 					FechaFinal = DateTime.Today.AddDays(8)
 				},
-				
-				 //podemos crear nuestra sala de cines, con hashset
 
-					SalasDeCine = new HashSet<SalaDeCine>
-					{
-						new SalaDeCine
-						{
-							Precio=200,
-							Moneda=Moneda.Desconocida,
-							TipoSalaDeCine=TiposSalaDeCine.DosDimensiones
-						},
-						new SalaDeCine
-						{
-							Precio=350,
-							Moneda=Moneda.BTC,
-							TipoSalaDeCine=TiposSalaDeCine.TresDimensiones
-						}
-					}
-				 
+				//podemos crear nuestra sala de cines, con hashset
+
+				//SalasDeCine = new HashSet<SalaDeCine>
+				//{
+				//	new SalaDeCine
+				//	{
+				//		Precio=200,
+				//		Moneda=Moneda.Desconocida,
+				//		TipoSalaDeCine=TiposSalaDeCine.DosDimensiones
+				//	},
+				//	new SalaDeCine
+				//	{
+				//		Precio=350,
+				//		Moneda=Moneda.BTC,
+				//		TipoSalaDeCine=TiposSalaDeCine.TresDimensiones
+				//	}
+				//}
+
 
 				/*
 				 se hace un cambio por ObservableCollection, ya que se esta usando una tecnica
@@ -164,6 +164,21 @@ namespace EFCorePeliculasApi.Controllers
 					}
 				}
 				*/
+				SalasDeCine = new ObservableCollection<SalaDeCine>
+				{
+					new SalaDeCine
+					{
+						Precio=200,
+						Moneda=Moneda.ColonCostarricense,
+						TipoSalaDeCine=TiposSalaDeCine.DosDimensiones
+					},
+					new SalaDeCine
+					{
+						Precio=350,
+						Moneda=Moneda.BTC,
+						TipoSalaDeCine=TiposSalaDeCine.TresDimensiones
+					}
+				}
 			};
 
 			context.Add(cine);
